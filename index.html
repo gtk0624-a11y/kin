@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스마트 학급 명렬표 프로그램</title>
+  <style>
+    :root {
+      --primary-color: #4a90e2;
+      --secondary-color: #50e3c2;
+      --bg-color: #f4f7f6;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-color: #e0e0e0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2c3e50;
+      font-size: 28px;
+    }
+
+    .panel {
+      background: #f9fbfd;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: var(--primary-color);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    textarea, input[type="text"], input[type="number"] {
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 80px;
+      resize: vertical;
+    }
+
+    .btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background-color: #357abd;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+    .btn-accent {
+      background-color: #e67e22;
+    }
+    .btn-accent:hover {
+      background-color: #d35400;
+    }
+
+    .btn-danger {
+      background-color: #e74c3c;
+    }
+    .btn-danger:hover {
+      background-color: #c0392b;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stats {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .student-card {
+      background: white;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      transition: all 0.2s ease;
+      position: relative;
+      user-select: none;
+    }
+
+    .student-card .num {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .student-card .name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .student-card .status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .status-present {
+      background-color: #e8f8f5;
+      color: #2ec4b6;
+    }
+
+    .status-absent {
+      background-color: #fde8e8;
+      color: #e74c3c;
+    }
+
+    .status-lateness {
+      background-color: #fef9e7;
+      color: #f1c40f;
+    }
+
+    .highlight {
+      border-color: #e74c3c !important;
+      background-color: #fef2f2 !important;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .result-box {
+      background: #eef6ff;
+      border: 1px solid #b6d4fe;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #0d6efd;
+      margin-top: 15px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .group-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .group-card {
+      background: #f8f9fa;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .group-title {
+      font-weight: bold;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+      color: var(--primary-color);
+    }
+
+    .group-list {
+      list-style: none;
+    }
+
+    .group-list li {
+      padding: 4px 0;
+      border-bottom: 1px dashed #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>학급 명렬표 관리 프로그램</h1>
+
+  <!-- 학생 등록 패널 -->
+  <div class="panel">
+    <div class="panel-title">1. 명단 입력 및 설정</div>
+    <p style="font-size: 13px; color: #666; margin-bottom: 8px;">학생 이름을 쉼표(,)나 줄바꿈(엔터)으로 구분하여 입력하세요.</p>
+    <div class="input-group">
+      <textarea id="studentInput" placeholder="예시:
+김철수, 이영희, 박민수
+정수진
+홍길동"></textarea>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn" onclick="registerStudents()">명단 등록하기</button>
+      <button class="btn btn-secondary" onclick="clearData()">전체 초기화</button>
+    </div>
+  </div>
+
+  <!-- 컨트롤 영역 -->
+  <div class="controls">
+    <div class="stats" id="statsText">총원: 0명 | 출석: 0명 | 결석: 0명 | 지각: 0명</div>
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-accent" onclick="pickRandomStudent()">🎲 랜덤 발표자 추첨</button>
+      <button class="btn btn-secondary" onclick="openGroupModal()">👥 모둠 자동 편성</button>
+    </div>
+  </div>
+
+  <!-- 발표자 추첨 결과 영역 -->
+  <div id="pickerResult" class="result-box" style="display: none;"></div>
+
+  <!-- 모둠 편성 결과 영역 -->
+  <div id="groupResult" style="display: none;" class="panel">
+    <div class="panel-title">모둠 편성 결과</div>
+    <div class="group-container" id="groupList"></div>
+  </div>
+
+  <!-- 학생 명단 카드가 출력되는 영역 -->
+  <div class="grid-container" id="studentGrid"></div>
+</div>
+
+<script>
+  let students = [];
+
+  // 페이지 로드시 기존 저장된 데이터 불러오기
+  window.onload = function() {
+    const savedData = localStorage.getItem('classStudents');
+    if (savedData) {
+      students = JSON.parse(savedData);
+      renderGrid();
+    }
+  };
+
+  // 학생 등록 함수
+  function registerStudents() {
+    const rawText = document.getElementById('studentInput').value.trim();
+    if (!rawText) {
+      alert('학생 이름을 입력해 주세요.');
+      return;
+    }
+
+    // 쉼표 및 줄바꿈 기준으로 이름 분리
+    const names = rawText.split(/[\n,]+/).map(n => n.trim()).filter(n => n.length > 0);
+    
+    if (names.length === 0) {
+      alert('올바른 이름을 입력해 주세요.');
+      return;
+    }
+
+    students = names.map((name, index) => ({
+      id: index + 1,
+      name: name,
+      status: 'present' // 기본 상태: 출석 (present, absent, lateness)
+    }));
+
+    saveAndRender();
+    document.getElementById('studentInput').value = '';
+  }
+
+  // 화면 그리드 렌더링
+  function renderGrid() {
+    const grid = document.getElementById('studentGrid');
+    grid.innerHTML = '';
+
+    students.forEach((student, index) => {
+      const card = document.createElement('div');
+      card.className = 'student-card';
+      card.id = `student-${student.id}`;
+
+      let statusText = '출석';
+      let statusClass = 'status-present';
+
+      if (student.status === 'absent') {
+        statusText = '결석';
+        statusClass = 'status-absent';
+      } else if (student.status === 'lateness') {
+        statusText = '지각';
+        statusClass = 'status-lateness';
+      }
+
+      card.innerHTML = `
+        <div class="num">${index + 1}번</div>
+        <div class="name">${escapeHtml(student.name)}</div>
+        <div class="status ${statusClass}" onclick="toggleStatus(${index})">${statusText}</div>
+      `;
+
+      grid.appendChild(card);
+    });
+
+    updateStats();
+  }
+
+  // 출석 상태 변경 (출석 -> 지각 -> 결석 순환)
+  function toggleStatus(index) {
+    const current = students[index].status;
+    if (current === 'present') {
+      students[index].status = 'lateness';
+    } else if (current === 'lateness') {
+      students[index].status = 'absent';
+    } else {
+      students[index].status = 'present';
+    }
+    saveAndRender();
+  }
+
+  // 통계 업데이트
+  function updateStats() {
+    const total = students.length;
+    const present = students.filter(s => s.status === 'present').length;
+    const absent = students.filter(s => s.status === 'absent').length;
+    const lateness = students.filter(s => s.status === 'lateness').length;
+
+    document.getElementById('statsText').innerText = 
+      `총원: ${total}명 | 출석: ${present}명 | 결석: ${absent}명 | 지각: ${lateness}명`;
+  }
+
+  // 데이터 저장 및 렌더링
+  function saveAndRender() {
+    localStorage.setItem('classStudents', JSON.stringify(students));
+    renderGrid();
+  }
+
+  // 데이터 초기화
+  function clearData() {
+    if (confirm('모든 학생 명단과 출석 정보가 삭제됩니다. 계속하시겠습니까?')) {
+      students = [];
+      localStorage.removeItem('classStudents');
+      renderGrid();
+      document.getElementById('pickerResult').style.display = 'none';
+      document.getElementById('groupResult').style.display = 'none';
+    }
+  }
+
+  // 랜덤 발표자 추첨 기능
+  function pickRandomStudent() {
+    const presentStudents = students.filter(s => s.status !== 'absent');
+
+    if (presentStudents.length === 0) {
+      alert('추첨할 수 있는 출석 학생이 없습니다.');
+      return;
+    }
+
+    const resultBox = document.getElementById('pickerResult');
+    resultBox.style.display = 'flex';
+    
+    // 기존 하이라이트 제거
+    document.querySelectorAll('.student-card').forEach(c => c.classList.remove('highlight'));
+
+    let counter = 0;
+    const maxCycles = 20;
+    
+    // 추첨 애니메이션 효과
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * presentStudents.length);
+      const selected = presentStudents[randomIndex];
+      
+      resultBox.innerText = `🎲 추첨 중... ${selected.name}`;
+
+      if (counter >= maxCycles) {
+        clearInterval(interval);
+        
+        // 최종 결정
+        const finalWinner = presentStudents[Math.floor(Math.random() * presentStudents.length)];
+        resultBox.innerHTML = `🎉 당첨자: <span style="font-size: 26px; margin-left: 10px; color: #d35400;">${escapeHtml(finalWinner.name)}</span>`;
+        
+        // 카드 하이라이트 표시
+        const winnerCard = document.getElementById(`student-${finalWinner.id}`);
+        if (winnerCard) {
+          winnerCard.classList.add('highlight');
+          winnerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+      counter++;
+    }, 100);
+  }
+
+  // 모둠 자동 편성 기능
+  function openGroupModal() {
+    if (students.length === 0) {
+      alert('등록된 학생이 없습니다.');
+      return;
+    }
+
+    const groupCountInput = prompt('생성할 모둠(그룹)의 개수를 입력하세요:', '4');
+    if (!groupCountInput) return;
+
+    const groupCount = parseInt(groupCountInput, 10);
+    if (isNaN(groupCount) || groupCount <= 0) {
+      alert('올바른 숫자를 입력하세요.');
+      return;
+    }
+
+    // 출석 및 지각 학생만 무작위로 섞기
+    const availableStudents = students.filter(s => s.status !== 'absent');
+    const shuffled = [...availableStudents].sort(() => Math.random() - 0.5);
+
+    // 모둠 배열 생성
+    const groups = Array.from({ length: groupCount }, () => []);
+
+    // 순차적으로 모둠에 배정
+    shuffled.forEach((student, index) => {
+      groups[index % groupCount].push(student);
+    });
+
+    // 결과 출력
+    const groupResultBox = document.getElementById('groupResult');
+    const groupListContainer = document.getElementById('groupList');
+    groupListContainer.innerHTML = '';
+
+    groups.forEach((group, idx) => {
+      const groupCard = document.createElement('div');
+      groupCard.className = 'group-card';
+      
+      let membersHtml = group.map(s => `<li>${escapeHtml(s.name)}</li>`).join('');
+      if (group.length === 0) membersHtml = '<li style="color: #aaa;">(배정 인원 없음)</li>';
+
+      groupCard.innerHTML = `
+        <div class="group-title">${idx + 1}모둠 (${group.length}명)</div>
+        <ul class="group-list">
+          ${membersHtml}
+        </ul>
+      `;
+      groupListContainer.appendChild(groupCard);
+    });
+
+    groupResultBox.style.display = 'block';
+    groupResultBox.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // HTML 이스케이프 처리 (보안)
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+</script>
+
+</body>
+</html>
